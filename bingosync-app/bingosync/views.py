@@ -88,13 +88,15 @@ def room_view(request, encoded_room_uuid):
             new_card_form.helper['variant_type'].wrap(Field, wrapper_class='hidden')
             new_card_form.helper['custom_json'].wrap(Field, wrapper_class='hidden')
             player = _get_session_player(request.session, room)
+            generated_board_html = _generate_board_html(room.current_game.board_width, room.current_game.board_height)
             params = {
                 "room": room,
                 "game": room.current_game,
                 "player": player,
                 "sockets_url": SOCKETS_URL,
                 "new_card_form": new_card_form,
-                "temporary_socket_key": _create_temporary_socket_key(player)
+                "temporary_socket_key": _create_temporary_socket_key(player),
+                "generated_board_html": generated_board_html
             }
             return render(request, "bingosync/bingosync.html", params)
         except NotAuthenticatedError:
@@ -153,12 +155,12 @@ def new_card(request):
         seed = str(random.randint(1, 1000000)) if game_type.uses_seed else "0"
 
     try:
-        board_json = game_type.generator_instance().get_card(seed, custom_board)
+        board_json = game_type.generator_instance().get_card(seed, custom_board, board_width, board_height)
     except GeneratorException as e:
         return HttpResponseBadRequest(str(e))
 
     with transaction.atomic():
-        game = Game.from_board(board_json, room=room, game_type_value=game_type.value, lockout_mode_value=lockout_mode.value, seed=seed)
+        game = Game.from_board(board_json, room=room, game_type_value=game_type.value, lockout_mode_value=lockout_mode.value, seed=seed, board_width=board_width, board_height=board_height)
 
         if hide_card != room.hide_card:
             room.hide_card = hide_card
@@ -377,6 +379,36 @@ def _get_session_player(session, room):
         return Player.get_for_encoded_uuid(encoded_player_uuid)
     except KeyError:
         raise NotAuthenticatedError()
+
+def _generate_board_html(board_width, board_height):
+    html = "<table id=\"bingo\" style=\"background-color: inherit\">";
+    html += "<tr>";
+    html += "<td class=\"unselectable popout\" id=\"tlbr\">TL-BR</td>";
+    for i in range(board_width):
+        html += "<td class=\"unselectable popout\" id=\"col" + str(i + 1) + "\">COL" + str(i + 1) + "</td>"
+    html += "</tr>";
+    slot = 0
+    for i in range(board_height):
+        html += "<tr>";
+        html += "<td class=\"unselectable popout\" id=\"row" + str(i + 1) + "\">ROW" + str(i + 1) + "</td>";
+        for j in range(board_width):
+            if i == j:
+                tlbr_text = "tlbr";
+            else:
+                tlbr_text = "";
+            if i == board_width - 1 - j:
+                bltr_text = "bltr";
+            else:
+                bltr_text = "";
+
+            html += "<td class=\"unselectable square blanksquare row" + str(i + 1) + " col" + str(i + 1) + tlbr_text + " " + bltr_text + "\" id=\"slot" + str(slot + 1) + "\"></td>";
+            slot += 1;
+        html += "</tr>";
+    html += "<tr>";
+    html += "<td class=\"unselectable popout\" id=\"bltr\">BL-TR</td>";
+    html += "</tr>";
+    html += "</table>";
+    return html;
 
 def _clear_session_player(session, room):
     # have to set the session this way so that it saves properly

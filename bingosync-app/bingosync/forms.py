@@ -34,6 +34,8 @@ class RoomForm(forms.Form):
     room_name = forms.CharField(label="Room Name", max_length=ROOM_NAME_MAX_LENGTH)
     passphrase = forms.CharField(label="Password", widget=forms.PasswordInput())
     nickname = forms.CharField(label="Nickname", max_length=PLAYER_NAME_MAX_LENGTH)
+    board_width = forms.IntegerField(label="Board Width", max_value=10, min_value=2, step_size=1)
+    board_height = forms.IntegerField(label="Board Height", max_value=10, min_value=2, step_size=1)
     game_type = forms.ChoiceField(label="Game", choices=GameType.game_choices())
     variant_type = forms.ChoiceField(label="Variant", choices=GameType.variant_choices(), widget=GroupedSelect,
                            help_text="No other variants available", required=False)
@@ -80,6 +82,8 @@ class RoomForm(forms.Form):
         room_name = self.cleaned_data["room_name"]
         passphrase = self.cleaned_data["passphrase"]
         nickname = self.cleaned_data["nickname"]
+        board_width = self.cleaned_data["board_width"]
+        board_height = self.cleaned_data["board_height"]
         game_type = GameType.for_value(int(self.cleaned_data["game_type"]))
         lockout_mode = LockoutMode.for_value(int(self.cleaned_data["lockout_mode"]))
         seed = self.cleaned_data["seed"]
@@ -94,7 +98,7 @@ class RoomForm(forms.Form):
         if not seed:
             seed = str(random.randint(1, 1000000)) if game_type.uses_seed else "0"
 
-        board_json = game_type.generator_instance().get_card(seed, custom_board)
+        board_json = game_type.generator_instance().get_card(seed, custom_board, board_width, board_height)
 
         encrypted_passphrase = hashers.make_password(passphrase)
         with transaction.atomic():
@@ -102,7 +106,7 @@ class RoomForm(forms.Form):
             room.save()
 
             game = Game.from_board(board_json, room=room, game_type_value=game_type.value,
-                    lockout_mode_value=lockout_mode.value, seed=seed)
+                    lockout_mode_value=lockout_mode.value, seed=seed, board_width=board_width, board_height=board_height)
 
             creator = Player(room=room, name=nickname, is_spectator=is_spectator)
             creator.save()

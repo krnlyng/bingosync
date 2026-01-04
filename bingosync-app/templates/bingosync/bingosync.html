@@ -22,7 +22,7 @@
             <div class="fill-parent" style="text-align: center">
                     {% include 'bingosync/color_chooser.html' %}
                 <div class="board-container{{ room.hide_card|yesno:" hidden-card," }}">
-                    {% include 'bingosync/board.html' %}
+                    {{ generated_board_html|safe }}
                     <div class="board-cover">
                         <div class="board-cover-text unselectable">
                             Click to Reveal
@@ -69,6 +69,9 @@
         var player = JSON.parse('{{ player.to_json|jsonify|escapejs }}');
         window.sessionStorage.setItem("room", "{{ room.encoded_uuid }}");
 
+        var boardWidth = ROOM_SETTINGS.board_width;
+        var boardHeight = ROOM_SETTINGS.board_height;
+
         var boardUrl = "{% url 'room_board' room.encoded_uuid %}";
         var chatHistoryUrl = "{% url 'room_feed' room.encoded_uuid %}";
         var chatUrl = "{% url 'chat_message' %}";
@@ -81,7 +84,7 @@
 
         // Construct all of the UI components
         var colorChooser = new ColorChooser($("#color-chooser"), player, colorSelectedUrl);
-        var board = new Board($("#bingo"), player, colorChooser, boardUrl, goalSelectedUrl);
+        var board = new Board($("#bingo"), player, colorChooser, boardUrl, goalSelectedUrl, boardWidth, boardHeight);
         var boardCover = new BoardCover($(".board-container"), ROOM_SETTINGS.hide_card, boardRevealedUrl);
         var playersPanel = new PlayersPanel($("#players-panel"));
         var roomSettingsPanel = new RoomSettingsPanel($("#room-settings-container"), roomSettingsUrl);

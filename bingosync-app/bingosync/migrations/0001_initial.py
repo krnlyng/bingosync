@@ -76,7 +76,7 @@ class Migration(migrations.Migration):
             name='Square',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
-                ('slot', models.IntegerField(choices=[(1, '1'), (2, '2'), (3, '3'), (4, '4'), (5, '5'), (6, '6'), (7, '7'), (8, '8'), (9, '9'), (10, '10'), (11, '11'), (12, '12'), (13, '13'), (14, '14'), (15, '15'), (16, '16'), (17, '17'), (18, '18'), (19, '19'), (20, '20'), (21, '21'), (22, '22'), (23, '23'), (24, '24'), (25, '25')], validators=[bingosync.models.validate_in_slot_range])),
+                ('slot', models.IntegerField()),
                 ('goal', models.CharField(max_length=255)),
                 ('color_value', models.IntegerField(verbose_name='Color', default=1, choices=[(1, 'Blank'), (2, 'Red'), (3, 'Blue'), (4, 'Green'), (5, 'Orange'), (6, 'Purple')])),
                 ('game', models.ForeignKey(to='bingosync.Game', on_delete=models.CASCADE)),

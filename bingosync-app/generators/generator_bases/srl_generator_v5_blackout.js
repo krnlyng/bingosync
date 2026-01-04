@@ -71,50 +71,23 @@ bingoGenerator = function(bingoList, opts) {
     var MODE = opts.mode || "normal";
     var cardType = "Normal";
     var SEED = opts.seed || Math.ceil(999999 * Math.random()).toString();
-    var size = 5;
+    var board_width = opts.board_width;
+    var board_height = opts.board_height;
     if (true) {
         Math.seedrandom(SEED);
         var MAX_SEED = 999999;
 
     var lineCheckList = [];
-    lineCheckList[1] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
-    lineCheckList[2] = [0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
-    lineCheckList[3] = [0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
-    lineCheckList[4] = [0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
-    lineCheckList[5] = [0, 1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
-    lineCheckList[6] = [0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
-    lineCheckList[7] = [0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
-    lineCheckList[8] = [0, 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
-    lineCheckList[9] = [0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
-    lineCheckList[10] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
-    lineCheckList[11] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
-    lineCheckList[12] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
-    lineCheckList[13] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
-    lineCheckList[14] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
-    lineCheckList[15] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
-    lineCheckList[16] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 18, 19, 20, 21, 22, 23, 24];
-    lineCheckList[17] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 18, 19, 20, 21, 22, 23, 24];
-    lineCheckList[18] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 19, 20, 21, 22, 23, 24];
-    lineCheckList[19] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 20, 21, 22, 23, 24];
-    lineCheckList[20] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24];
-    lineCheckList[21] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24];
-    lineCheckList[22] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 23, 24];
-    lineCheckList[23] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 23, 24];
-    lineCheckList[24] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 24];
-    lineCheckList[25] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
-
-        function mirror(i) {
-            if (i == 0) {
-                i = 4;
-            } else if (i == 1) {
-                i = 3;
-            } else if (i == 3) {
-                i = 1;
-            } else if (i == 4) {
-                i = 0;
-            }
-            return i;
+    for (var k = 1; k <= board_width * board_height; k++) {
+        line = [];
+        m = 0;
+        for (var l = 0; l < board_width * board_height - 1; l++) {
+            if (l == k) m++;
+            line.push(m);
+            m++;
         }
+        lineCheckList[k] = line;
+    }
 
         function difficulty(i) {
             var Num3 = SEED % 1000;
@@ -181,12 +154,12 @@ bingoGenerator = function(bingoList, opts) {
             return synergy;
         }
         var bingoBoard = [];
-        for (var i = 1; i <= 25; i++) {
+        for (var i = 1; i <= board_width * board_height; i++) {
             bingoBoard[i] = {
                 difficulty: difficulty(i)
             };
         }
-        for (var i = 1; i <= 25; i++) {
+        for (var i = 1; i <= board_width * board_height; i++) {
             var getDifficulty = bingoBoard[i].difficulty;
             var RNG = Math.floor(bingoList[getDifficulty].length * Math.random());
             if (RNG == bingoList[getDifficulty].length) {

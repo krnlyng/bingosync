@@ -167,6 +167,8 @@ class Room(models.Model):
             "variant": str(game.game_type),
             "variant_id": game.game_type_value,
             "seed": game.seed,
+            "board_width": game.board_width,
+            "board_height": game.board_height,
         }
 
 
@@ -201,6 +203,8 @@ class Game(models.Model):
     created_date = models.DateTimeField("Creation Time", default=timezone.now)
     game_type_value = models.IntegerField("Game Type", choices=GameType.choices)
     lockout_mode_value = models.IntegerField("Lockout Mode", choices=LockoutMode.choices(), default=LockoutMode.default_value())
+    board_width = models.IntegerField()
+    board_height = models.IntegerField()
 
     class Meta:
         indexes = [
@@ -218,7 +222,7 @@ class Game(models.Model):
             game.save()
             for index, square_json in enumerate(board_json):
                 slot = index + 1
-                square = Square(game=game, slot=slot, goal=square_json["name"])
+                square = Square(game=game, slot=slot, goal=square_json["name"], board_width=game.board_width, board_height=game.board_height)
                 square.full_clean()
                 square.save()
         return game
@@ -265,18 +269,14 @@ class Game(models.Model):
         goal_event.save()
         return goal_event
 
-
-SLOT_RANGE = range(1, 26)
-SLOT_CHOICES = [(num, str(num)) for num in SLOT_RANGE]
-
-def validate_in_slot_range(slot):
-    return slot in SLOT_RANGE
-
 class Square(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
-    slot = models.IntegerField(choices=SLOT_CHOICES, validators=[validate_in_slot_range])
+    # TODO
+    slot = models.IntegerField()
     goal = models.CharField(max_length=255)
     color_value = models.IntegerField("Color", default=CompositeColor.goal_default().value, choices=CompositeColor.goal_choices())
+    board_width = models.IntegerField()
+    board_height = models.IntegerField()
 
     class Meta:
         unique_together = (("game", "slot"),)

@@ -3,9 +3,6 @@ var Board = (function(){
 
     var ORDERED_COLORS = ["pink", "red", "orange", "brown", "yellow", "green", "teal", "blue", "navy", "purple"];
 
-    var ROW_NAMES = ["row1", "row2", "row3", "row4", "row5",
-                     "col1", "col2", "col3", "col4", "col5", "tlbr", "bltr"];
-
     function sortColors(colors) {
         var orderedColors = [];
         for (var i = 0; i < ORDERED_COLORS.length; i++) {
@@ -104,18 +101,29 @@ var Board = (function(){
         setSquareColors(this.$square, json["colors"]);
     };
 
-    var Board = function($board, playerJson, colorChooser, getBoardUrl, selectGoalUrl) {
+    var Board = function($board, playerJson, colorChooser, getBoardUrl, selectGoalUrl, boardWidth, boardHeight) {
         this.$board = $board;
         this.$squares = $board.find(".square");
         this.isSpectator = playerJson.is_spectator;
         this.colorChooser = colorChooser;
         this.getBoardUrl = getBoardUrl;
         this.selectGoalUrl = selectGoalUrl;
+        this.boardWidth = boardWidth;
+        this.boardHeight = boardHeight;
         this.squares = [];
-        for (var i = 0; i < 25; i++) {
+        for (var i = 0; i < this.boardWidth * this.boardHeight; i++) {
             var $square = $board.find("#slot" + (i + 1));
             this.squares.push(new Square($square));
         }
+        this.row_names = [];
+        for (var i = 0; i < this.boardWidth; i++) {
+            this.row_names.push("row" + (i + 1));
+        }
+        for (var i = 0; i < this.boardHeight; i++) {
+            this.row_names.push("col" + (i + 1));
+        }
+        this.row_names.push("tlbr");
+        this.row_names.push("bltr");
 
         var that = this;
         if (!this.isSpectator) {
@@ -133,8 +141,8 @@ var Board = (function(){
             );
         }
 
-        for (var i = 0; i < ROW_NAMES.length; i++) {
-            addRowHover(ROW_NAMES[i]);
+        for (var i = 0; i < this.row_names.length; i++) {
+            addRowHover(this.row_names[i]);
         }
 
         $(window).resize(function () {
@@ -179,7 +187,8 @@ var Board = (function(){
 
     Board.prototype.getRowCount = function(colorClass) {
         var that = this;
-        return ROW_NAMES.filter(function(row_name) {
+
+        return this.row_names.filter(function(row_name) {
             var rowSquares = that.$board.find("." + row_name);
             var coloredSquares = rowSquares.filter(function() {
                 return squareHasColor($(this), colorClass);
